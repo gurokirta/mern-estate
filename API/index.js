@@ -24,3 +24,19 @@ app.listen(3000, () => {
 
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  //! აქ ვამოწმებთ თუ error-ში გვაქვს statusCode მაშინ ეგ ამოგვაქვს და თუ არ არის მაშინ ვტოვებთ სერვერის ერორს რომელიც არის code 500
+
+  // --------------------
+  const message = err.message || "Internal Server Error";
+  //! აქ ვამოწმებთ თუ error-ში გვაქვს message მაშინ ამოგვაქვს ეგ და თუ არ არის მაშინ უბრალოდ ვტოვებთ ჩვენს მიერ შექმნილ მესიჯს, რაც უკვე სტრინგში გვიწერია
+
+  return res.status(statusCode).json({
+    //! ამ ჯეისონში ჩვენ სტატუსის სახით ვწერთ ზემოთ მოცემულ statusCode-ს და შემდეგ ფროფერთიებს, რომლებიც გვაქვს მოცემული უკვე მასში
+    success: false,
+    statusCode,
+    message,
+  });
+});
