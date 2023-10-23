@@ -3,9 +3,11 @@ import { app } from "../firebase";
 
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../Redux/User/userSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function Oauth() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLoginWithGoogle = async () => {
     try {
@@ -27,6 +29,7 @@ export default function Oauth() {
 
       const data = await res.json();
       dispatch(signInSuccess(data));
+      navigate("/");
     } catch (error) {
       console.log("Could not sign with google", error);
     }
