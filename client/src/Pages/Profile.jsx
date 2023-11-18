@@ -30,7 +30,7 @@ export default function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
-  console.log(userListings);
+  // console.log(userListings);
 
   const fileRef = useRef(null);
   const dispatch = useDispatch();
@@ -143,6 +143,24 @@ export default function Profile() {
       setUserListings(data);
     } catch (error) {
       setShowListingsError(true);
+    }
+  };
+
+  const handleDeleteListing = async listingId => {
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+
+      setUserListings(prev => prev.filter(listing => listing._id !== listingId));
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -274,7 +292,12 @@ export default function Profile() {
                   <p>{listing.name}</p>
                 </Link>
                 <div className="flex flex-col items-center">
-                  <button className="text-red-700 uppercase">Delete</button>
+                  <button
+                    onClick={() => handleDeleteListing(listing._id)}
+                    className="text-red-700 uppercase"
+                  >
+                    Delete
+                  </button>
                   <button className="text-green-700 uppercase">Update</button>
                 </div>
               </div>
