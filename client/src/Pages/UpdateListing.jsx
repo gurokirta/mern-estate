@@ -122,7 +122,7 @@ export default function UpdateListing() {
     ) {
       setFormData(prev => ({
         ...prev,
-        [e.target.name]: e.target.checked,
+        [e.target.id]: e.target.checked,
       }));
     }
 
@@ -348,7 +348,10 @@ export default function UpdateListing() {
                 />
                 <div className="flex flex-col items-center">
                   <span>Discounted price</span>
-                  <span className="text-xs">( $ / Month)</span>
+                  {formData.type === "rent" && (
+                    <span className="text-xs">($ / month)</span>
+                  )}
+                  {/* <span className="text-xs">( $ / Month)</span> */}
                 </div>
               </div>
             )}

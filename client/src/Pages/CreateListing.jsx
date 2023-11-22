@@ -43,7 +43,7 @@ export default function CreateListing() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  // console.log(formData);
+
   const navigate = useNavigate();
 
   const storageImage = async file => {
@@ -89,8 +89,9 @@ export default function CreateListing() {
           setImageUploadError(false);
           setUploading(false);
         })
+        // eslint-disable-next-line no-unused-vars
         .catch(error => {
-          setImageUploadError(error, "Image upload failed (max 2 mb per img)");
+          setImageUploadError("Image upload failed (max 2 mb per img)");
           setUploading(false);
         });
     } else {
