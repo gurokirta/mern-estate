@@ -24,6 +24,10 @@ export default function Listing() {
   const [contact, setContact] = useState(false);
   const params = useParams();
 
+  // console.log("currentUser - ", currentUser);
+  // console.log("currentUser._id - ", currentUser?._id);
+  // console.log("listing.userRef - ", listing?.userRef);
+
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0;
     const newIndex = isFirstSlide ? listing.imageUrls.length - 1 : currentIndex - 1;
@@ -152,7 +156,7 @@ export default function Listing() {
             {listing?.furnished ? "Furnished" : "Unfurnished"}
           </li>
         </ul>
-        {currentUser && listing?.userRef !== currentUser._id && !contact && (
+        {currentUser && listing?.userRef !== currentUser?._id && !contact && (
           <button
             onClick={() => setContact(true)}
             className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3"
