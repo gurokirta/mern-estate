@@ -1,8 +1,116 @@
+/* eslint-disable no-constant-condition */
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 export default function Search() {
+  const [sideBarData, setSideBarData] = useState({
+    searchTerm: "",
+    type: "all",
+    offer: false,
+    parking: false,
+    furnished: false,
+    sort: "created_at",
+    order: "desc",
+  });
+  const [loading, setLoading] = useState(false);
+  const [listings, setListings] = useState([]);
+
+  const { searchTerm, type, offer, parking, furnished, order, sort } = sideBarData;
+
+  const navigate = useNavigate();
+
+  const handleChange = e => {
+    if (e.target.id === "all" || e.target.id === "sale" || e.target.id === "rent") {
+      setSideBarData(prev => ({ ...prev, type: e.target.id }));
+    }
+
+    if (e.target.id === "searchTerm") {
+      setSideBarData(prev => ({ ...prev, searchTerm: e.target.value }));
+    }
+
+    if (
+      e.target.id === "parking" ||
+      e.target.id === "offer" ||
+      e.target.id === "furnished"
+    ) {
+      setSideBarData(prev => ({
+        ...prev,
+        [e.target.id]:
+          e.target.checked || e.target.checked === "true" ? true : false,
+      }));
+    }
+
+    if (e.target.id === "sort_order") {
+      const sort = e.target.value.split("_")[0] || "created_at";
+      const order = e.target.value.split("_")[1] || "desc";
+      setSideBarData(prev => ({ ...prev, sort, order }));
+    }
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+
+    const urlParams = new URLSearchParams();
+    urlParams.set("searchTerm", searchTerm);
+    urlParams.set("type", type);
+    urlParams.set("offer", offer);
+    urlParams.set("parking", parking);
+    urlParams.set("furnished", furnished);
+    urlParams.set("sort", sort);
+    urlParams.set("order", order);
+
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermURL = urlParams.get("searchTerm");
+    const typeURL = urlParams.get("type");
+    const offerURL = urlParams.get("offer");
+    const parkingURL = urlParams.get("parking");
+    const furnishedURL = urlParams.get("furnished");
+    const sortURL = urlParams.get("sort");
+    const orderURL = urlParams.get("order");
+
+    if (
+      searchTermURL ||
+      typeURL ||
+      offerURL ||
+      parkingURL ||
+      furnishedURL ||
+      sortURL ||
+      orderURL
+    ) {
+      setSideBarData({
+        searchTerm: searchTermURL || "",
+        type: typeURL || "all",
+        parking: parkingURL === "true" ? true : false,
+        furnished: furnishedURL === "true" ? true : false,
+        offer: offerURL === "true" ? true : false,
+        sort: sortURL || "created_at",
+        order: orderURL || "desc",
+      });
+    }
+
+    const fetchListings = async () => {
+      setLoading(true);
+      const searchQuery = urlParams.toString();
+      const res = await fetch(`/api/listing/getListings?${searchQuery}`);
+      const data = await res.json();
+      setListings(data);
+      setLoading(false);
+    };
+    fetchListings();
+  }, [location.search]);
+
   return (
     <div className="flex flex-col md:flex-row">
       <div className="p-7 border-b-2 md:border-r-2 md:min-h-screen">
-        <form className="flex flex-col gap-8">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-8"
+        >
           <div className="flex items-center gap-2">
             <label className="whitespace-nowrap font-semibold">Search term :</label>
             <input
@@ -10,6 +118,8 @@ export default function Search() {
               id="searchTerm"
               placeholder="Search ..."
               className="border rounded-lg p-3 w-full"
+              value={searchTerm}
+              onChange={handleChange}
             />
           </div>
           <div className="flex gap-2 flex-wrap items-center">
@@ -19,6 +129,8 @@ export default function Search() {
                 type="checkbox"
                 id="all"
                 className="w-5"
+                onChange={handleChange}
+                checked={type === "all"}
               />
               <span>Rent & Sale</span>
             </div>
@@ -27,6 +139,8 @@ export default function Search() {
                 type="checkbox"
                 id="rent"
                 className="w-5"
+                onChange={handleChange}
+                checked={type === "rent"}
               />
               <span>Rent </span>
             </div>
@@ -35,6 +149,8 @@ export default function Search() {
                 type="checkbox"
                 id="sale"
                 className="w-5"
+                onChange={handleChange}
+                checked={type === "sale"}
               />
               <span>Sale</span>
             </div>
@@ -43,6 +159,8 @@ export default function Search() {
                 type="checkbox"
                 id="offer"
                 className="w-5"
+                onChange={handleChange}
+                checked={offer}
               />
               <span>Offer</span>
             </div>
@@ -54,6 +172,8 @@ export default function Search() {
                 type="checkbox"
                 id="parking"
                 className="w-5"
+                onChange={handleChange}
+                checked={parking}
               />
               <span>Parking</span>
             </div>
@@ -62,6 +182,8 @@ export default function Search() {
                 type="checkbox"
                 id="furnished"
                 className="w-5"
+                onChange={handleChange}
+                checked={furnished}
               />
               <span>Furnished </span>
             </div>
@@ -71,12 +193,14 @@ export default function Search() {
 
             <select
               id="sort_order"
+              onChange={handleChange}
+              defaultValue={"created_at_desc"}
               className="border rounded-lg p-3"
             >
-              <option value="">Price high to low</option>
-              <option value="">Price low to high</option>
-              <option value="">Latest</option>
-              <option value="">Oldest</option>
+              <option value="regularPrice_desc">Price high to low</option>
+              <option value="regularPrice_asc">Price low to high</option>
+              <option value="createdAt_desc">Latest</option>
+              <option value="createdAt_asc">Oldest</option>
             </select>
           </div>
           <button className="bg-slate-700 text-white uppercase p-3 rounded-lg hover:opacity-95">
