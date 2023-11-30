@@ -15,6 +15,7 @@ export default function Search() {
   });
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
+  const [showMore, setShowMore] = useState(false);
 
   const { searchTerm, type, offer, parking, furnished, order, sort } = sideBarData;
 
@@ -64,6 +65,20 @@ export default function Search() {
     navigate(`/search?${searchQuery}`);
   };
 
+  const handleShowMoreListings = async () => {
+    const numberOfListings = listings.length;
+    const startIndex = numberOfListings;
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("startIndex", startIndex);
+    const searchQuery = urlParams.toString();
+
+    const res = await fetch(`/api/listing/getListings?${searchQuery}`);
+    const data = await res.json();
+    if (data.length < 9) setShowMore(false);
+
+    setListings(prev => [...prev, ...data]);
+  };
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermURL = urlParams.get("searchTerm");
@@ -96,9 +111,16 @@ export default function Search() {
 
     const fetchListings = async () => {
       setLoading(true);
+      setShowMore(false);
       const searchQuery = urlParams.toString();
       const res = await fetch(`/api/listing/getListings?${searchQuery}`);
       const data = await res.json();
+
+      if (data.length > 8) {
+        setShowMore(true);
+      } else {
+        setShowMore(false);
+      }
       setListings(data);
       setLoading(false);
     };
@@ -229,6 +251,16 @@ export default function Search() {
                 listing={listing}
               />
             ))}
+        </div>
+        <div className="">
+          {showMore && (
+            <button
+              onClick={handleShowMoreListings}
+              className="text-green-700 hover:underline p-7 text-center w-full"
+            >
+              Show more
+            </button>
+          )}
         </div>
       </div>
     </div>
