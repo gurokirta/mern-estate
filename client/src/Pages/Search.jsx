@@ -1,6 +1,7 @@
 /* eslint-disable no-constant-condition */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ListingItem from "../components/ListingItem";
 
 export default function Search() {
   const [sideBarData, setSideBarData] = useState({
@@ -208,10 +209,27 @@ export default function Search() {
           </button>
         </form>
       </div>
-      <div className="">
+      <div className="flex-1">
         <h1 className="text-3xl font-semibold p-3 text-slate-700 border-b-2 mt-5">
           Search result:
         </h1>
+        <div className="flex flex-wrap gap-4 p-7">
+          {!loading && listings.length === 0 && (
+            <p className="text-lg text-slate-700">No listings found !</p>
+          )}
+          {loading && (
+            <p className="text-lg text-slate-700 text-center w-full">Loading ...</p>
+          )}
+
+          {!loading &&
+            listings &&
+            listings.map(listing => (
+              <ListingItem
+                key={listing._id}
+                listing={listing}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );
