@@ -23,12 +23,6 @@ export default function Listing() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [contact, setContact] = useState(false);
   const params = useParams();
-  console.log(+listing?.regularPrice - +listing?.discountPrice);
-  console.log(+listing?.regularPrice);
-  console.log(+listing?.discountPrice);
-  // console.log("currentUser - ", currentUser);
-  // console.log("currentUser._id - ", currentUser?._id);
-  // console.log("listing.userRef - ", listing?.userRef);
 
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0;
