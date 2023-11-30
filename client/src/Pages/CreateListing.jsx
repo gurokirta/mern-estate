@@ -333,7 +333,11 @@ export default function CreateListing() {
                 />
                 <div className="flex flex-col items-center">
                   <span>Discounted price</span>
-                  <span className="text-xs">( $ / Month)</span>
+                  {formData.offer && formData.type === "sale" ? (
+                    <span className="text-xs"> $ </span>
+                  ) : (
+                    <span className="text-xs">( $ / Month)</span>
+                  )}
                 </div>
               </div>
             )}
